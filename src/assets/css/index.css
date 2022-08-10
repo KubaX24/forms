@@ -1,0 +1,175 @@
+header{
+    display: flex;
+    height: 60px;
+    flex-wrap: wrap;
+    background-color: var(--up-color);
+    align-items: center;
+    color: var(--text-color);
+    border-bottom: 1px var(--second-color) solid;
+    box-shadow: 0 0 5px var(--second-color);
+}
+
+header h1{
+    padding: 0;
+    margin: 0 0 0 20px;
+}
+
+header nav{
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+footer{
+    color: var(--up-color);
+    width: 100%;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.vote-form{
+    display: flex;
+    flex-direction: column;
+    width: 40em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    color: var(--text-color);
+    background-color: var(--up-color);
+    border-top: 5px solid var(--second-color);
+    border-radius: 10px;
+    padding: 20px;
+    animation-name: screen-load;
+    animation-duration: 750ms;
+}
+
+.vote-form h2{
+    margin: 0;
+}
+
+.vote-form #center{
+    text-align: center;
+}
+
+.vote-form #center img{
+    filter: invert(28%) sepia(24%) saturate(6840%) hue-rotate(333deg) brightness(85%) contrast(81%);
+}
+
+.vote-form #vote-description{
+    margin: 20px 0;
+}
+
+.vote-form #vote-options{
+    width: 100%;
+    font-size: 20px;
+}
+
+.vote-form #vote-options .vote-option{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 10px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--main-color);
+}
+
+.vote-form #vote-options .vote-option .opt-title{
+    width: 90px;
+    margin-left: 30px;
+    text-align: center;
+}
+
+.vote-form #vote-options .vote-option .opt-date{
+    margin-left: 5px;
+}
+
+.vote-form #vote-options h3{
+    margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--main-color);
+}
+
+.vote-form #vote-options .vote-option .opt-opts{
+    margin-left: auto;
+}
+
+.vote-form #vote-options .vote-option .opt-opts button{
+    padding: 10px;
+    margin: 2px;
+    border: 1px solid var(--main-color);
+    background-color: var(--background);
+    color: var(--text-color);
+}
+
+.vote-form #vote-options .vote-option .opt-opts button img{
+    width: 20px;
+    height: 20px;
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+}
+
+.vote-form #input-submit{
+    width: 40%;
+    margin-left: auto;
+    font-size: 20px;
+    background-color: var(--second-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 10px;
+    margin-top: 10px;
+    padding: 3px;
+}
+
+.vote-form #vote-input{
+    margin: 10px 0;
+}
+
+.vote-form #vote-input .input-text{
+    width: 98%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 7px;
+    border-radius: 7px;
+    border: 1px solid var(--second-color);
+    background-color: var(--background);
+    color: var(--text-color);
+    font-size: 15px;
+}
+
+
+.vote-form #vote-input .input-textarea{
+    width: 98%;
+    margin-top: 10px;
+    padding: 7px;
+    border-radius: 7px;
+    border: 1px solid var(--second-color);
+    background-color: var(--background);
+    color: var(--text-color);
+    font-size: 15px;
+    resize: none;
+}
+
+.vote-form #vote-input .input-textarea:focus{
+    outline: none;
+    border: 1px solid var(--main-color);
+}
+
+.vote-form #vote-input .input-text:focus{
+    outline: none;
+    border: 1px solid var(--main-color);
+}
+
+@keyframes screen-load {
+    0%{
+        opacity: 30%;
+        margin-top: 0;
+    }
+    100%{
+        opacity: 100%;
+        margin-top: 20px;
+    }
+}
+
+@media only screen and (max-width: 700px){
+    .vote-form{
+        width: 90%;
+    }
+}

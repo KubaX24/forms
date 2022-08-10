@@ -1,0 +1,126 @@
+.vote-form #calendar{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.vote-form #calendar #calendar-title{
+    font-size: 20px;
+    border-bottom: 1px solid var(--main-color);
+    padding-bottom: 5px;
+    display: flex;
+    gap: 8px;
+}
+
+.vote-form #calendar #calendar-title #add-buttons{
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+}
+
+.vote-form #calendar #calendar-title #add-buttons button {
+    font-size: 20px;
+    background-color: var(--background);
+    color: var(--text-color);
+    border: 1px solid var(--main-color);
+    width: 30px;
+}
+
+.vote-form #calendar #calendar-week{
+    display: flex;
+}
+
+.vote-form #calendar #calendar-week .week{
+    display: flex;
+    width: 40px;
+    margin: 2px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+}
+
+.vote-form #calendar #calendar-panel{
+    display: flex;
+    width: 100%;
+    gap: 10px;
+}
+
+.vote-form #calendar #calendar-panel #calendar-days{
+
+}
+
+.vote-form #calendar #calendar-panel #calendar-days .calendar-day{
+    background-color: var(--background);
+    width: 40px;
+    height: 40px;
+    color: var(--text-color);
+    border: 1px solid var(--second-color);
+    margin: 2px;
+    border-radius: 25%;
+    font-size: 15px;
+}
+
+.vote-form #calendar #calendar-panel #calendar-days .calendar-day:hover{
+    border: 1px solid var(--main-color);
+}
+
+.vote-form #calendar #calendar-panel #calendar-days .disabled-day{
+    opacity: 0;
+    height: 0;
+}
+
+.vote-form #calendar #calendar-panel #calendar-selected{
+
+}
+
+.vote-form #calendar #calendar-panel #calendar-selected .selected-date{
+    display: flex;
+    align-items: center;
+    width: 320px;
+    margin: 10px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--main-color);
+}
+
+.vote-form #calendar #calendar-panel #calendar-selected .selected-date .sel-date{
+}
+
+.vote-form #calendar #calendar-panel #calendar-selected .selected-date .sel-title{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.vote-form #calendar #calendar-panel #calendar-selected .selected-date .sel-control{
+    margin-left: auto;
+}
+
+.vote-form #calendar #calendar-panel #calendar-selected .selected-date .sel-control button{
+    padding: 6px;
+    margin: 2px;
+    border: none;
+    background-color: var(--up-color);
+
+    color: var(--text-color);
+}
+
+.vote-form #calendar #calendar-panel #calendar-selected .selected-date .sel-control button img{
+    width: 10px;
+    height: 10px;
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+}
+
+.vote-form #calendar #calendar-panel #calendar-selected .selected-date .sel-control input{
+    padding: 3px;
+    margin: 2px;
+    border: 1px solid var(--main-color);
+    background-color: var(--background);
+    color: var(--text-color);
+}
+
+@media only screen and (max-width: 700px){
+    .vote-form #calendar #calendar-panel{
+        flex-direction: column;
+        width: 100%;
+    }
+}
