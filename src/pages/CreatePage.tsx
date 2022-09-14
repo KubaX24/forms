@@ -1,4 +1,4 @@
-import {createSignal, For} from "solid-js";
+import {createSignal, For, Show} from "solid-js";
 
 import '/src/assets/css/create.css'
 
@@ -41,20 +41,35 @@ const datesArray: DateItem[] = []
 const [inputTitle, setInputTitle] = createSignal("")
 const [inputDesc, setinputDesc] = createSignal("")
 
+const [isCreated, setCreated] = createSignal(false)
+const [voteLink, setVoteLink] = createSignal("")
+
 function CreatePage(){
     return(
         <>
-            <div class={"vote-form"}>
-                <h2>Create new vote</h2>
-                <div id={"vote-input"}>
-                    <div class={"input-name-text"}>Title <span>*</span></div>
-                    <input type="text" id={"input-title"} class={"input-text"} value={inputTitle()} onInput={(e) => setInputTitle(e.currentTarget.value)}/>
-                    <div class={"input-name-text"}>Description</div>
-                    <textarea name="input-description" id="input-description"  class={"input-textarea"} cols="20" rows="5" value={inputDesc()} onInput={(e) => setinputDesc(e.currentTarget.value)}></textarea>
+            <Show when={!isCreated()} fallback={
+                <>
+                    <div class={"vote-form"}>
+                        <div id={"center"}>
+                            <h2>Created su</h2>
+                            <p>Share: <a href={"http://localhost:3000/vote/" + voteLink()}>localhost:3000/vote/{voteLink()}</a></p>
+                            <img src="https://cdn.chytac.com/static/img/check.png" alt="Check" draggable={false} />
+                        </div>
+                    </div>
+                </>
+            }>
+                <div class={"vote-form"}>
+                    <h2>Create new vote</h2>
+                    <div id={"vote-input"}>
+                        <div class={"input-name-text"}>Title <span>*</span></div>
+                        <input type="text" id={"input-title"} class={"input-text"} value={inputTitle()} onInput={(e) => setInputTitle(e.currentTarget.value)}/>
+                        <div class={"input-name-text"}>Description</div>
+                        <textarea name="input-description" id="input-description"  class={"input-textarea"} cols="20" rows="5" value={inputDesc()} onInput={(e) => setinputDesc(e.currentTarget.value)}></textarea>
+                    </div>
+                    {drawCalendar()}
+                    <input type="submit" id={"input-submit"} onClick={(e) => createNewVote()} />
                 </div>
-                {drawCalendar()}
-                <input type="submit" id={"input-submit"} onClick={(e) => createNewVote()} />
-            </div>
+            </Show>
         </>
     )
 }
@@ -191,19 +206,36 @@ function updateTime(date: Date, key: number, time: string) {
     setUpdateS(updateS()+1)
 }
 
-function createNewVote(){
+function createNewVote() {
     let submitCreate: SubmitCreateItem = {
         name: inputTitle(),
         description: inputDesc(),
         listOfDates: []
     }
 
-    datesArray.forEach((e) =>{
+    datesArray.forEach((e) => {
         let d: string = e.date.toISOString()
         submitCreate.listOfDates.push({date: d})
     })
 
-    console.log(JSON.stringify(submitCreate))
+
+    fetch("https://api.chytac.com/forms/vote", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(submitCreate)
+    }).then((response) => {
+        response.json().then((data) => {
+            setVoteLink(data.id);
+        }).catch((err) => {
+            setVoteLink(err);
+        })
+    });
+
+    setCreated(true)
 }
 
 export default CreatePage

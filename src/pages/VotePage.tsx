@@ -1,54 +1,59 @@
 import {useParams} from "solid-app-router"
-import {createSignal, For, Show} from "solid-js"
+import {createResource, createSignal, For, Show} from "solid-js"
 import AnswersConponent from "../content/AnswersConponent";
 
 let voteSubmitRequest: object
 let optionsArray: { idDate: number, type: number }[] = []
 const [voted, setVoted] = createSignal(false)
 
-function VotePage(){
-    const params = useParams();
+const fetchDataObject = async (id: string) => (
+    await fetch(`https://api.chytac.com/forms/vote/${id}/`)).json()
 
-    const jsonData = "{\"name\":\"Day for cookie??\",\"description\":\"desc on top\",\"listOfDates\":[{\"id\":2,\"date\":\"2022-06-08T18:00:12.869908\"},{\"id\":3,\"date\":\"2022-06-07T17:00:12.86993\"},{\"id\":4,\"date\":\"2022-06-06T18:00:12.869936\"}]}"
-    const dataObject: { name: string, description: string, listOfDates: {date: string, id:number}[] } = JSON.parse(jsonData)
+function VotePage() {
+    const params = useParams()
+
+    const [vote] = createResource(params.id, fetchDataObject);
 
     let orderNumber = 0
 
-    return(
+    return (
         <>
             <Show when={!voted()} fallback={
                 <div class={"vote-form"}>
                     <div id={"center"}>
                         <h2>Thanks for vote</h2>
-                        <img src="https://cdn.chytac.com/static/img/check.png" alt="Check" draggable={false} />
+                        <img src="https://cdn.chytac.com/static/img/check.png" alt="Check" draggable={false}/>
                     </div>
                 </div>
             }>
-                <div class={"vote-form"}>
-                    <h2>{dataObject.name}</h2>
-                    <div id={"vote-description"}>{dataObject.description}</div>
+                <Show when={vote() != undefined}>
+                    <div class={"vote-form"}>
+                        <h2>{vote().name}</h2>
+                        <div id={"vote-description"}>{vote().description}</div>
 
-                    <div id={"vote-options"}>
-                        <h3>Dates <span>*</span></h3>
-                        <For each={dataObject.listOfDates} fallback={<div>Loading...</div>}>{(item) =>
-                            <>
-                                {voteOption("ok", new Date(Date.parse(item.date)), orderNumber++, item.id)}
-                            </>
-                        }</For>
+                        <div id={"vote-options"}>
+                            <h3>Dates <span>*</span></h3>
+                            <For each={vote().listOfDates} fallback={<div>Loading...</div>}>{(item:{id: number, date: string}) =>
+                                <>
+                                    {voteOption("ok", new Date(Date.parse(item.date)), orderNumber++, item.id)}
+                                </>
+                            }</For>
+                        </div>
+                        <div id={"vote-input"}>
+                            <div class={"input-name-text"}>Name <span>*</span></div>
+                            <input type="text" id={"input-name"} class={"input-text"} placeholder={"Enter your name"}/>
+                        </div>
+                        <button onClick={e => submitVote(params.id)} id={"input-submit"}>Vote</button>
+                        <div id={"errorMessages"}></div>
                     </div>
-                    <div id={"vote-input"}>
-                        <div class={"input-name-text"}>Name <span>*</span></div>
-                        <input type="text" id={"input-name"} class={"input-text"} placeholder={"Enter your name"}/>
-                    </div>
-                    <button onClick={e => submitVote(params.id)} id={"input-submit"}>Vote</button>
-                    <div id={"errorMessages"}></div>
-                </div>
+                </Show>
             </Show>
 
             <AnswersConponent />
         </>
     )
 }
+
 function voteOption(name: string, date: Date, order: number, id: number) {
     optionsArray[order] = {
         idDate: id,
@@ -70,7 +75,6 @@ function voteOption(name: string, date: Date, order: number, id: number) {
         </div>
     )
 }
-
 
 function changeStatus(status: number,order:number, id: number) {
     const optionObject: { idDate: number, type: number } = {
@@ -99,7 +103,7 @@ function changeStatus(status: number,order:number, id: number) {
     optionsArray[order] = optionObject
 }
 
-function submitVote(pageId: string) {
+async function submitVote(pageId: string) {
     const target = document.getElementById("input-name") as HTMLInputElement
     const errorDiv = document.getElementById("errorMessages")!
 
@@ -112,6 +116,17 @@ function submitVote(pageId: string) {
             authorName: target.value,
             listOfAnswers: optionsArray
         }
+
+        const response = await fetch("https://api.chytac.com/forms/vote/" + pageId + "/answer", {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(voteSubmitRequest)
+        })
+        console.log(response)
         setVoted(true)
         window.history.pushState({},"","/vote/" + pageId + "/voted");
     }

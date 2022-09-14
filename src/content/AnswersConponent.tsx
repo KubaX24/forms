@@ -1,57 +1,70 @@
-import {For} from "solid-js";
+import {createResource, For, Show} from "solid-js";
+import {useParams} from "solid-app-router";
 
-let answersCount: number[] = []
+
+const fetchAnsObject = async (id: string) => (
+    await fetch(`https://api.chytac.com/forms/vote/${id}/answers`)).json()
+
 
 function AnswersComponent() {
-    const ansData = "[{\"authorName\":\"asd\",\"listOfAnswers\":[{\"idDate\":2,\"type\":2},{\"idDate\":3,\"type\":2},{\"idDate\":4,\"type\":2}]},{\"authorName\":\"kxokTest\",\"listOfAnswers\":[{\"idDate\":2,\"type\":1},{\"idDate\":3,\"type\":0},{\"idDate\":4,\"type\":1}]},{\"authorName\":\"Lukáš\",\"listOfAnswers\":[{\"idDate\":2,\"type\":2},{\"idDate\":3,\"type\":0},{\"idDate\":4,\"type\":0}]},{\"authorName\":\"KubaX\",\"listOfAnswers\":[{\"idDate\":2,\"type\":0},{\"idDate\":3,\"type\":1},{\"idDate\":4,\"type\":0}]},{\"authorName\":\"OMEGALUL\",\"listOfAnswers\":[{\"idDate\":2,\"type\":0},{\"idDate\":3,\"type\":0},{\"idDate\":4,\"type\":0}]}]"
-    const voteDate = "{\"name\":\"Day for cookie??\",\"description\":\"desc on top\",\"listOfDates\":[{\"id\":2,\"date\":\"2022-06-08T18:00:12.869908\"},{\"id\":3,\"date\":\"2022-06-07T17:00:12.86993\"},{\"id\":4,\"date\":\"2022-06-06T18:00:12.869936\"}]}"
+    const params = useParams();
 
-    const ansByNameArray: {authorName: string, listOfAnswers: {idDate: number, type:number}[]}[] = JSON.parse(ansData)
-    const voteObject: { name: string, description: string, listOfDates: {date: string, id:number}[] } = JSON.parse(voteDate)
-
-    voteObject.listOfDates.forEach((i) => {
-        answersCount[i.id] = 0
-    })
-
-    ansByNameArray.forEach((i) => {
-        i.listOfAnswers.forEach((a) =>{
-            if (a.type == 0){
-                answersCount[a.idDate]++
-            }
-        })
-    })
+    const [ans] = createResource(params.id, fetchAnsObject);
 
     return(
         <div class={"vote-form"}>
-            <h2>Answers</h2>
-            <div id={"result-table"}>
-                <div class={"result-line"}>
-                    <div class={"result-td"}></div>
-                    <For each={voteObject.listOfDates} fallback={<th>Loading...</th>}>{(item) =>
-                        <div class={"result-th"}>
-                            <div class={"result-dates"}>
-                                <div>{new Date(Date.parse(item.date)).toLocaleDateString("cs-CZ", {day: 'numeric', month: 'numeric'})}</div>
-                                <div>{new Date(Date.parse(item.date)).toLocaleString("cs-CZ", {weekday: 'long'})}</div>
-                                <div>{new Date(Date.parse(item.date)).toLocaleTimeString("cs-CZ", {hour: 'numeric', minute: 'numeric'})}</div>
-                                <div class={"result-an"}>{answersCount[item.id]} <img src="https://cdn.chytac.com/static/img/check.png" alt="Check"/></div>
-                            </div>
-                        </div>
-                    }</For>
-                </div>
-                <For each={ansByNameArray} fallback={<td>Loading...</td>}>{(item) =>
+            <Show when={(ans() != undefined)} fallback={
+                <>
+                    <div id={"center"}>
+                        <h2>Vote and be first in answers!</h2>
+                    </div>
+                </>
+            }>
+                <h2>Answers</h2>
+                <div id={"result-table"}>
                     <div class={"result-line"}>
-                        <div class={"result-td"}>{item.authorName}</div>
-
-                        <For each={item.listOfAnswers} fallback={<div>Loading...</div>}>{(item) =>
-                            <div class={"result-td"}>
-                                {getAnswer(item.type)}
+                        <div class={"result-td"}></div>
+                        <For each={ans().votes} fallback={<th>Loading...</th>}>{(item:{id: number, date: string}) =>
+                            <div class={"result-th"}>
+                                <div class={"result-dates"}>
+                                    <div>{new Date(Date.parse(item.date)).toLocaleDateString("cs-CZ", {day: 'numeric', month: 'numeric'})}</div>
+                                    <div>{new Date(Date.parse(item.date)).toLocaleString("cs-CZ", {weekday: 'long'})}</div>
+                                    <div>{new Date(Date.parse(item.date)).toLocaleTimeString("cs-CZ", {hour: 'numeric', minute: 'numeric'})}</div>
+                                    <div class={"result-an"}> <img src="https://cdn.chytac.com/static/img/check.png" alt="Check"/></div>
+                                </div>
                             </div>
                         }</For>
                     </div>
-                }</For>
-            </div>
+                    <For each={ans().answers} fallback={<td>Loading...</td>}>{(item: {authorName: string, listOfAnswers: []}) =>
+                        <div class={"result-line"}>
+                            <div class={"result-td"}>{item.authorName}</div>
+
+                            <For each={item.listOfAnswers} fallback={<div>Loading...</div>}>{(item: {type: number}) =>
+                                <div class={"result-td"}>
+                                    {getAnswer(item.type)}
+                                </div>
+                            }</For>
+                        </div>
+                    }</For>
+                </div>
+            </Show>
         </div>
     )
+}
+
+function getData(url: string): string{
+    let resp: string = ""
+
+    fetch(url)
+        .then((response) => {
+            response.json().then((data) => {
+                resp = data
+            }).catch((err) => {
+                resp = err
+            })
+        })
+
+    return resp
 }
 
 function getAnswer(level: number) {
